@@ -29,4 +29,4 @@ def initial_loader():
     initial_character_load()
 
 
-initial_loader()
+#initial_loader()

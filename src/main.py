@@ -97,17 +97,17 @@ def add_favorites_planets():
     favorite = request.get_json()
     if favorite == {}:
         return jsonify("Empty request")
-    newFavorite = FavoriteCharacter(user_id=current_user.id, planet_id = favorite['planet_id'])
+    newFavorite = FavoritePlanet(user_id=current_user.id, planet_id = favorite['planet_id'])
     db.session.add(newFavorite)
     db.session.commit()
 
 @app.route("/add-favorites-characters", methods=["POST"])
 @jwt_required()
-def add_favorites_planets():
+def add_favorites_characters():
     favorite = request.get_json()
     if favorite == {}:
         return jsonify("Empty request")
-    newFavorite = FavoritePlanet(user_id=current_user.id, character_id = favorite['character_id'])
+    newFavorite = FavoriteCharacter(user_id=current_user.id, character_id = favorite['character_id'])
     db.session.add(newFavorite)
     db.session.commit()
 

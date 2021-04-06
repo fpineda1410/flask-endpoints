@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 855aad6795e0
+Revision ID: 4085fab61631
 Revises: 
-Create Date: 2021-04-06 03:33:47.319331
+Create Date: 2021-04-06 18:00:22.340516
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '855aad6795e0'
+revision = '4085fab61631'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -27,17 +27,19 @@ def upgrade():
     sa.Column('skin_color', sa.String(length=100), nullable=False),
     sa.Column('hair_color', sa.String(length=100), nullable=False),
     sa.Column('eye_color', sa.String(length=100), nullable=False),
+    sa.Column('homeworld', sa.String(length=100), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('planet',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.Column('climate', sa.String(length=100), nullable=False),
-    sa.Column('population', sa.Integer(), nullable=False),
+    sa.Column('population', sa.String(length=100), nullable=False),
     sa.Column('terrain', sa.String(length=100), nullable=False),
-    sa.Column('rotation_period', sa.Integer(), nullable=False),
-    sa.Column('orbital_period', sa.Integer(), nullable=False),
-    sa.Column('diameter', sa.Integer(), nullable=False),
+    sa.Column('rotation_period', sa.String(length=100), nullable=False),
+    sa.Column('orbital_period', sa.String(length=100), nullable=False),
+    sa.Column('diameter', sa.String(length=100), nullable=False),
+    sa.Column('surface_water', sa.String(length=100), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('user',
