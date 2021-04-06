@@ -11,14 +11,14 @@ from admin import setup_admin
 from models import db, User,Character,Planet,FavoritePlanet,FavoriteCharacter
 from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import create_access_token
+
 from flask_jwt_extended import current_user
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
-import requests
- #ste men
-#from models import Person
- 
 
+# insert character and planet data into the SQL databases
+from bootload import initial_loader
+import requests
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -30,13 +30,6 @@ db.init_app(app)
 CORS(app)
 setup_admin(app)
 
-# insert character and planet data into the SQL databases
-
-
-
-
-
-# Handle/serialize errors like a JSON object
 
 @jwt.user_identity_loader
 def user_identity_lookup(user):
@@ -56,6 +49,7 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
+#todo hash and salt passwords
 @app.route('/create-account', methods=['POST'])
 def create_account():
     body=request.get_json()
@@ -74,16 +68,15 @@ def create_account():
     user.email=body['email']
     user.password=body['password']
     user.is_active=True
-
     db.session.add(user)
     db.session.commit()
-
 
     response_body = {
         "msg": "Added user"
     }
 
     return jsonify(response_body), 200
+
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -97,6 +90,35 @@ def login():
     access_token = create_access_token(identity=user)
     return jsonify(access_token=access_token)
 
+
+@app.route("/add-favorites-planets", methods=["POST"])
+@jwt_required()
+def add_favorites_planets():
+    favorite = request.get_json()
+    if favorite == {}:
+        return jsonify("Empty request")
+    newFavorite = FavoriteCharacter(user_id=current_user.id, planet_id = favorite['planet_id'])
+    db.session.add(newFavorite)
+    db.session.commit()
+
+@app.route("/add-favorites-characters", methods=["POST"])
+@jwt_required()
+def add_favorites_planets():
+    favorite = request.get_json()
+    if favorite == {}:
+        return jsonify("Empty request")
+    newFavorite = FavoritePlanet(user_id=current_user.id, character_id = favorite['character_id'])
+    db.session.add(newFavorite)
+    db.session.commit()
+
+@app.route("/get-favorites" , methods=["POST"])
+@jwt_required()
+def get_favorites():
+    favorite_character = FavoriteCharacter.query.filter_by(user_id=current_user.id)
+    favorite_planet = FavoritePlanet.query.filter_by(user_id=current_user.id)
+    return jsonify(favorite_character.serialize(),favorite_planet.serialize()), 200
+
+
 @app.route("/user_identity", methods=["GET"])
 @jwt_required()
 def protected():
@@ -107,11 +129,7 @@ def protected():
         username=current_user.username,
     )
 
-
-# this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
-    #inyeccion a la base de datos 
-    #
-    # data_inyection()
+    initial_loader()
     PORT = int(os.environ.get('PORT', 3000))
     app.run(host='0.0.0.0', port=PORT, debug=False)

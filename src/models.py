@@ -3,6 +3,7 @@ from werkzeug.security import safe_str_cmp
 
 db = SQLAlchemy()
 
+#todo hash and salt passwords
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -34,6 +35,7 @@ class Character(db.Model):
     skin_color = db.Column(db.String(100), nullable=False)
     hair_color = db.Column(db.String(100), nullable=False)
     eye_color = db.Column(db.String(100), nullable=False)
+    homeworld=db.Column(db.String(100), nullable=False)
     favorite_id = db.relationship('FavoriteCharacter', backref='character', lazy=True)
     
     def __repr__(self):
@@ -56,11 +58,12 @@ class Planet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     climate = db.Column(db.String(100), nullable=False)
-    population = db.Column(db.Integer, nullable=False)
+    population = db.Column(db.String(100), nullable=False)
     terrain = db.Column(db.String(100), nullable=False)
-    rotation_period = db.Column(db.Integer, nullable=False)
-    orbital_period = db.Column(db.Integer, nullable=False)
-    diameter = db.Column(db.Integer, nullable=False)
+    rotation_period = db.Column(db.String(100), nullable=False)
+    orbital_period = db.Column(db.String(100), nullable=False)
+    diameter = db.Column(db.String(100), nullable=False)
+    surface_water=db.Column(db.String(100), nullable=False)
     favorite_id = db.relationship('FavoritePlanet', backref='planet', lazy=True)
     
     def __repr__(self):
