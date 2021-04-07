@@ -99,61 +99,6 @@ def load_data():
     initial_loader()
     return jsonify("Succesfully added the Data"), 200
 
-@app.route("/update-favoritespp", methods=["GET"])
-def update_favorites():
-    favorites_payload = request.get_json()
-    return jsonify("Succesfully added the Data"), 200
-
-# @app.route("/add-favorites-planets", methods=["POST"])
-# @jwt_required()
-# def add_favorites_planets():
-#     favorite = request.get_json()
-#     if favorite == {}:
-#         return jsonify("Empty request")
-#     newFavorite = FavoritePlanet(user_id=current_user.id, planet_id = favorite['planet_id'])
-#     db.session.add(newFavorite)
-#     db.session.commit()
-#     merged_lists=get_merged_lists(current_user.id)
-#     #todo retornar la lista de todos
-#     return jsonify(merged_lists),200
-
-@app.route("/add-favorites-characters", methods=["POST"])
-@jwt_required()
-def add_favorites_characters():
-    favorite = request.get_json()
-    if favorite == {}:
-        return jsonify("Empty request")
-    newFavorite = FavoriteCharacter(user_id=current_user.id, character_id = favorite['character_id'])
-    db.session.add(newFavorite)
-    db.session.commit()
-    
-    #todo retornar la lista de todos
-    return jsonify("succes!! character added"),200
-
-
-# @app.route("/delete-planet", methods=["POST"])
-# @jwt_required
-# def delete_planet():
-#     delete_input=request.get_json()
-#     deletion = FavoritePlanet.query.filter_by(user_id=current_user.id,planet_id=delete_input["planet_id"])
-#     db.session.delete(deletion)
-#     db.session.commit()
-#     merged_lists=get_merged_lists(current_user.id)
-#     #todo retornar la lista de todos
-#     return jsonify(merged_lists),200
-
-# @app.route("/delete-character", methods=["POST"])
-# @jwt_required
-# def delete_character():
-#     delete_input=request.get_json()
-#     deletion = FavoriteCharacter.query.filter_by(user_id=current_user.id,planet_id=delete_input["character_id"])
-#     db.session.delete(deletion)
-#     db.session.commit()
-#     merged_lists=get_merged_method(current_user.id)
-#     #todo retornar la lista de todos
-#     return jsonify(merged_lists),200
-
-
 @app.route("/get-favorites" , methods=["GET"])
 @jwt_required()
 def get_favorites():
@@ -164,16 +109,12 @@ def get_favorites():
 @jwt_required()
 def update_favorites_sm():
     user_payload=request.get_json()
-
-    # if 'category' not in user_payload:
-    #     return "A PLANET-CHARACTER category object must be declared", 400
-
     updated_lists=update_favorites_lists(user_payload,current_user.id)
     return jsonify("Succesfully updated databases", updated_lists), 200
     
 
 
-
+#Just use for debugging purposes
 @app.route("/user_identity", methods=["GET"])
 @jwt_required()
 def protected():

@@ -17,16 +17,19 @@ def get_merged_lists(current_user_id):
 
 def update_filter_planet (planet_list,current_user_id):
     try:
+        #----------------------------------------------------------------------------------TODO EDIT THIS TO AVOID REPEATED OBJECTS
         #delete the removed values from the database-then append the new ones
         favorite_planet = FavoritePlanet.query.filter_by(user_id=current_user_id)
         serialized_items = list(map(lambda favorite: favorite.serialize(), favorite_planet))
-        for old_db_item in range (len(serialized_items)):
-            if old_db_item[i]['id'] not in planet_list:
+        for item in range (len(serialized_items)):
+            print(serialized_items[item]['id'])
+            if serialized_items[item]['id'] not in planet_list:
+                print(True)
                 #if old item in DB is not in the new list emitted by the user then erase it and update DB
-                item_to_delete  = FavoritePlanet.query.filter_by(user_id=current_user_id,id=old_db_item["id"]).first()
+                item_to_delete  = FavoritePlanet.query.filter_by(user_id=current_user_id, id=serialized_items[item]['id'])
                 db.session.delete(item_to_delete)
         db.session.commit()
-
+        #----------------------------------------------------------------------------------TODO EDIT THIS TO AVOID REPEATED OBJECTS
         new_favorite_planet = FavoritePlanet.query.filter_by(user_id=current_user_id)
         new_serialized_items = list(map(lambda favorite: favorite.serialize(), favorite_planet))
         new_serialized_items_dict =[]
@@ -47,6 +50,7 @@ def update_filter_planet (planet_list,current_user_id):
 
 def update_filter_character (character_list,current_user_id):
     try:
+        #----------------------------------------------------------------------------------TODO EDIT THIS TO AVOID REPEATED OBJECTS
         #delete the removed values from the database-then append the new ones
         favorite_character = FavoriteCharacter.query.filter_by(user_id=current_user_id)
         serialized_items = list(map(lambda favorite: favorite.serialize(), favorite_character))
@@ -59,7 +63,7 @@ def update_filter_character (character_list,current_user_id):
                 db.session.delete(item_to_delete)
 
         db.session.commit()
-
+        #----------------------------------------------------------------------------------TODO EDIT THIS TO AVOID REPEATED OBJECTS
         new_favorite_character = FavoriteCharacter.query.filter_by(user_id=current_user_id)
         new_serialized_items = list(map(lambda favorite: favorite.serialize(), favorite_character))
         new_serialized_items_dict =[]
