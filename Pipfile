@@ -21,6 +21,7 @@ flask-admin = "*"
 requests = "*"
 flask-jwt-extended = "*"
 werkzeug = "*"
+datetime = "*"
 
 [requires]
 python_version = "3.8"

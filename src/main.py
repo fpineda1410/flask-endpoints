@@ -16,8 +16,9 @@ from flask_jwt_extended import current_user
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
 
-# insert character and planet data into the SQL databases
 from bootload import initial_loader
+from special_methods import get_merged_lists,update_favorites_lists
+from datetime import timedelta
 import requests
 
 app = Flask(__name__)
@@ -29,6 +30,7 @@ jwt = JWTManager(app)
 db.init_app(app)
 CORS(app)
 setup_admin(app)
+
 
 
 @jwt.user_identity_loader
@@ -48,6 +50,7 @@ def handle_invalid_usage(error):
 @app.route('/')
 def sitemap():
     return generate_sitemap(app)
+    
 
 #todo hash and salt passwords
 @app.route('/create-account', methods=['POST'])
@@ -87,19 +90,32 @@ def login():
     if not user or not user.check_password(password):
         return jsonify("Wrong username or password"), 401
     
-    access_token = create_access_token(identity=user)
+    expiration=timedelta(hours=80)
+    access_token = create_access_token(identity=user, expires_delta=expiration)
     return jsonify(access_token=access_token)
 
+@app.route("/load_data", methods=["GET"])
+def load_data():
+    initial_loader()
+    return jsonify("Succesfully added the Data"), 200
 
-@app.route("/add-favorites-planets", methods=["POST"])
-@jwt_required()
-def add_favorites_planets():
-    favorite = request.get_json()
-    if favorite == {}:
-        return jsonify("Empty request")
-    newFavorite = FavoritePlanet(user_id=current_user.id, planet_id = favorite['planet_id'])
-    db.session.add(newFavorite)
-    db.session.commit()
+@app.route("/update-favoritespp", methods=["GET"])
+def update_favorites():
+    favorites_payload = request.get_json()
+    return jsonify("Succesfully added the Data"), 200
+
+# @app.route("/add-favorites-planets", methods=["POST"])
+# @jwt_required()
+# def add_favorites_planets():
+#     favorite = request.get_json()
+#     if favorite == {}:
+#         return jsonify("Empty request")
+#     newFavorite = FavoritePlanet(user_id=current_user.id, planet_id = favorite['planet_id'])
+#     db.session.add(newFavorite)
+#     db.session.commit()
+#     merged_lists=get_merged_lists(current_user.id)
+#     #todo retornar la lista de todos
+#     return jsonify(merged_lists),200
 
 @app.route("/add-favorites-characters", methods=["POST"])
 @jwt_required()
@@ -110,13 +126,52 @@ def add_favorites_characters():
     newFavorite = FavoriteCharacter(user_id=current_user.id, character_id = favorite['character_id'])
     db.session.add(newFavorite)
     db.session.commit()
+    
+    #todo retornar la lista de todos
+    return jsonify("succes!! character added"),200
 
-@app.route("/get-favorites" , methods=["POST"])
+
+# @app.route("/delete-planet", methods=["POST"])
+# @jwt_required
+# def delete_planet():
+#     delete_input=request.get_json()
+#     deletion = FavoritePlanet.query.filter_by(user_id=current_user.id,planet_id=delete_input["planet_id"])
+#     db.session.delete(deletion)
+#     db.session.commit()
+#     merged_lists=get_merged_lists(current_user.id)
+#     #todo retornar la lista de todos
+#     return jsonify(merged_lists),200
+
+# @app.route("/delete-character", methods=["POST"])
+# @jwt_required
+# def delete_character():
+#     delete_input=request.get_json()
+#     deletion = FavoriteCharacter.query.filter_by(user_id=current_user.id,planet_id=delete_input["character_id"])
+#     db.session.delete(deletion)
+#     db.session.commit()
+#     merged_lists=get_merged_method(current_user.id)
+#     #todo retornar la lista de todos
+#     return jsonify(merged_lists),200
+
+
+@app.route("/get-favorites" , methods=["GET"])
 @jwt_required()
 def get_favorites():
-    favorite_character = FavoriteCharacter.query.filter_by(user_id=current_user.id)
-    favorite_planet = FavoritePlanet.query.filter_by(user_id=current_user.id)
-    return jsonify(favorite_character.serialize(),favorite_planet.serialize()), 200
+    merged_lists=get_merged_lists(current_user.id)
+    return jsonify(merged_lists), 200
+
+@app.route("/update-favorites" , methods=["POST"])
+@jwt_required()
+def update_favorites_sm():
+    user_payload=request.get_json()
+
+    # if 'category' not in user_payload:
+    #     return "A PLANET-CHARACTER category object must be declared", 400
+
+    updated_lists=update_favorites_lists(user_payload,current_user.id)
+    return jsonify("Succesfully updated databases", updated_lists), 200
+    
+
 
 
 @app.route("/user_identity", methods=["GET"])
@@ -130,6 +185,5 @@ def protected():
     )
 
 if __name__ == '__main__':
-    initial_loader()
     PORT = int(os.environ.get('PORT', 3000))
     app.run(host='0.0.0.0', port=PORT, debug=False)
