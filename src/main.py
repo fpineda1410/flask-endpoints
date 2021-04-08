@@ -1,6 +1,7 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+#* Boilerplate libraries
 import os
 from flask import Flask, request, jsonify, url_for
 from flask_migrate import Migrate
@@ -10,17 +11,22 @@ from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User,Character,Planet,FavoritePlanet,FavoriteCharacter
 from werkzeug.security import safe_str_cmp
-from flask_jwt_extended import create_access_token
 
+#* JWT libraries
+from flask_jwt_extended import create_access_token
 from flask_jwt_extended import current_user
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
 
-from bootload import initial_loader
-from special_methods import get_merged_lists,update_favorites_lists
+#* Custom made libraries
+from initialLoad import initial_loader
+from payload_handlers import get_merged_lists,update_favorites_lists
+
+#*Generic Libraries
 from datetime import timedelta
 import requests
 
+#*MAIN SETUP
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_CONNECTION_STRING')
@@ -30,8 +36,7 @@ jwt = JWTManager(app)
 db.init_app(app)
 CORS(app)
 setup_admin(app)
-
-
+#*end MAIN SETUP
 
 @jwt.user_identity_loader
 def user_identity_lookup(user):
@@ -51,8 +56,6 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
     
-
-#todo hash and salt passwords
 @app.route('/create-account', methods=['POST'])
 def create_account():
     body=request.get_json()
@@ -79,7 +82,6 @@ def create_account():
     }
 
     return jsonify(response_body), 200
-
 
 @app.route("/login", methods=["POST"])
 def login():

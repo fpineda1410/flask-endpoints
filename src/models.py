@@ -87,7 +87,7 @@ class Planet(db.Model):
 
 class FavoritePlanet (db.Model): # favorite_planet
     id = db.Column(db.Integer, primary_key=True)
-    planet_id= db.Column(db.Integer,db.ForeignKey(Planet.local_id))#relacion con el id que no depende del registro
+    planet_id= db.Column(db.Integer,db.ForeignKey(Planet.local_id))
     user_id= db.Column(db.Integer,db.ForeignKey(User.id))
 
     def serialize(self):
