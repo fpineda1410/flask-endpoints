@@ -113,7 +113,6 @@ def update_favorites_sm():
     return jsonify("Succesfully updated databases", updated_lists), 200
     
 
-
 #Just use for debugging purposes
 @app.route("/user_identity", methods=["GET"])
 @jwt_required()

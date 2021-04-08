@@ -28,6 +28,7 @@ class User(db.Model):
 
 class Character(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    local_id = db.Column(db.Integer,nullable=False,unique=True)
     name = db.Column(db.String(100))
     birth_day = db.Column(db.String(100))
     gender = db.Column(db.String(100))
@@ -56,6 +57,8 @@ class Character(db.Model):
 
 class Planet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    #id local que no dependa del registro
+    local_id = db.Column(db.Integer,nullable=False,unique=True)
     name = db.Column(db.String(100))
     climate = db.Column(db.String(100))
     population = db.Column(db.String(100))
@@ -84,7 +87,7 @@ class Planet(db.Model):
 
 class FavoritePlanet (db.Model): # favorite_planet
     id = db.Column(db.Integer, primary_key=True)
-    planet_id= db.Column(db.Integer,db.ForeignKey(Planet.id))
+    planet_id= db.Column(db.Integer,db.ForeignKey(Planet.local_id))#relacion con el id que no depende del registro
     user_id= db.Column(db.Integer,db.ForeignKey(User.id))
 
     def serialize(self):
@@ -96,7 +99,7 @@ class FavoritePlanet (db.Model): # favorite_planet
 
 class FavoriteCharacter (db.Model): ## favorite_character
     id = db.Column(db.Integer, primary_key=True)
-    character_id= db.Column(db.Integer,db.ForeignKey(Character.id))
+    character_id= db.Column(db.Integer,db.ForeignKey(Character.local_id))
     user_id= db.Column(db.Integer,db.ForeignKey(User.id))
     
     def serialize(self):
