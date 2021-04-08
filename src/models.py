@@ -28,7 +28,7 @@ class User(db.Model):
 
 class Character(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    local_id = db.Column(db.Integer,nullable=False,unique=True)
+    local_id = db.Column(db.Integer,nullable=False,unique=True) #id que genera la base de datos index en lugar de id
     name = db.Column(db.String(100))
     birth_day = db.Column(db.String(100))
     gender = db.Column(db.String(100))

@@ -94,10 +94,12 @@ def login():
     
     expiration=timedelta(hours=80)
     access_token = create_access_token(identity=user, expires_delta=expiration)
+
     return jsonify(access_token=access_token)
 
 @app.route("/load_data", methods=["GET"])
 def load_data():
+    #todo filtro que revisa
     initial_loader()
     return jsonify("Succesfully added the Data"), 200
 

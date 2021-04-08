@@ -1,5 +1,6 @@
 from models import db, User,Character,Planet,FavoritePlanet,FavoriteCharacter
 
+import collections
 
 #!-----------------------------------------------------------------------------------------------------------------------------------Method to concatenate both serialized FavoriteCharacter and FavoritePlanet lists
 def get_merged_lists(current_user_id):
@@ -107,8 +108,10 @@ def update_favorites_lists (payload_from_request,current_user_id):
             planet_list.append(json_item["planet_id"]) #[12,5,6,14] how it will look
         if (json_item['category'] == "CHARACTER"):
             characters_list.append(json_item["character_id"]) #[12,5,6,14] how it will look
-    
+
+
     if (len(planet_list)>0):
+        planet_list = [x for n, x in enumerate(planet_list) if x not in planet_list[:n]]
         update_filter_planet(planet_list,current_user_id)
 
     elif (len(planet_list)==0):
@@ -121,6 +124,7 @@ def update_favorites_lists (payload_from_request,current_user_id):
         db.session.commit()
 
     if (len(characters_list)>0):
+        character_list = [x for n, x in enumerate(character_list) if x not in character_list[:n]]
         update_filter_character(characters_list,current_user_id)
     elif (len(characters_list)==0):
         all_favorites=FavoriteCharacter.query.filter_by(user_id=current_user_id)
